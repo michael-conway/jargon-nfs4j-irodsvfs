@@ -1,1 +1,1 @@
-/ *(rw,sec=sys)
+/ *(rw,sec=sys, fsid=0)
