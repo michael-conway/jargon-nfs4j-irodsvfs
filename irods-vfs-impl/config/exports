@@ -1,1 +1,1 @@
-/ *(rw,sec=sys, fsid=0)
+/ *(rw,sec=krb5)
