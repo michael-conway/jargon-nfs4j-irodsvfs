@@ -481,7 +481,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         try
         {
             CollectionAndDataObjectListAndSearchAO listAO = irodsAccessObjectFactory
-                .getCollectionAndDataObjectListAndSearchAO(resolveIrodsAccount());
+                .getCollectionAndDataObjectListAndSearchAO(rootAccount);
 
             // get collection listing from root node
             Path parentPath = resolveInode(getInodeNumber(_inode));
