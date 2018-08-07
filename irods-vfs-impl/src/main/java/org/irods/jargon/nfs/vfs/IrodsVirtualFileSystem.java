@@ -888,8 +888,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             //log.debug("Subject: " + AccessController.getContext().getDomainCombiner().getClass().getName());
             //log.debug("Subject UserID: " + subject.getPrincipals().iterator().next().getName());
             int userId = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
-            stat.setUid(userId);
-            stat.setGid(userId); // iRODS does not have a gid
+            stat.setUid(10003);
+            stat.setGid(10003); // iRODS does not have a gid
             log.debug("vfs::statPath - user id = {}", userId);
 
             // TODO right now don't have soft link or mode support
@@ -956,6 +956,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         
         int userID = 0;
         userID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
+        
         if(userID == 0){
             return rootAccount;
         }
