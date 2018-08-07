@@ -861,11 +861,13 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
 
         String irodsAbsPath = path.normalize().toString();
         log.debug("vfs::statPath - absolute path =  {}", irodsAbsPath);
+        IRODSAccount acct = resolveIrodsAccount();
+        log.debug("vfs::statPath - IRODSAccount: "+acct);
 
         try
         {
             CollectionAndDataObjectListAndSearchAO listAO = irodsAccessObjectFactory
-                .getCollectionAndDataObjectListAndSearchAO(resolveIrodsAccount());
+                .getCollectionAndDataObjectListAndSearchAO(acct);
             ObjStat objStat = listAO.retrieveObjectStatForPath(irodsAbsPath);
             log.debug("vfs::statPath - objStat = {}", objStat);
 
@@ -876,7 +878,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             stat.setMTime(objStat.getModifiedAt().getTime());
             
 
-            UserAO userAO = irodsAccessObjectFactory.getUserAO(resolveIrodsAccount());
+            UserAO userAO = irodsAccessObjectFactory.getUserAO(acct);
             StringBuilder sb = new StringBuilder();
             sb.append(objStat.getOwnerName());
             sb.append("#");
@@ -888,8 +890,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             //log.debug("Subject: " + AccessController.getContext().getDomainCombiner().getClass().getName());
             //log.debug("Subject UserID: " + subject.getPrincipals().iterator().next().getName());
             int userId = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
-            stat.setUid(10003);
-            stat.setGid(10003); // iRODS does not have a gid
+            stat.setUid(userId);
+            stat.setGid(userId); // iRODS does not have a gid
             log.debug("vfs::statPath - user id = {}", userId);
 
             // TODO right now don't have soft link or mode support
