@@ -143,10 +143,10 @@ public class IrodsIdMap implements NfsIdMapping, RpcLoginService{
             //get user name
         String username = _irods.getUserAO(_irodsAcct).findById(""+userID).getName();
         String userzone = _irods.getUserAO(_irodsAcct).findById(""+userID).getZone();
-        String homedir = "/"+userzone+"/home/"+username;
-        
+        //String homedir = "/"+userzone+"/home/"+username;
+        String homedir = "/tempZone/home/rods";
         //create Irods RootFile instance 
-        IRODSAccount acct = IRODSAccount.instanceWithProxy("localhost", 1247, _irodsAdmin, "rods",homedir,"tempZone","demoResc", username, userzone);
+        IRODSAccount acct = IRODSAccount.instanceWithProxy("localhost", 1247, "rods", "rods",homedir,"tempZone","demoResc", username, userzone);
         IRODSFileSystem fs = IRODSFileSystem.instance();
 	IRODSAccessObjectFactory factory = IRODSAccessObjectFactoryImpl.instance(fs.getIrodsSession());
 	IRODSFile rootFile = factory.getIRODSFileFactory(acct).instanceIRODSFile(homedir);
