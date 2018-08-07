@@ -889,7 +889,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             //int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
             //log.debug("Subject: " + AccessController.getContext().getDomainCombiner().getClass().getName());
             //log.debug("Subject UserID: " + subject.getPrincipals().iterator().next().getName());
-            int userId = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
+            //int userId = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
+            int userId = Integer.getInteger(user.getId());
             stat.setUid(userId);
             stat.setGid(userId); // iRODS does not have a gid
             log.debug("vfs::statPath - user id = {}", userId);
