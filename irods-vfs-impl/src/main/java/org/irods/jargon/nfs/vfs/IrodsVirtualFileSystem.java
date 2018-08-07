@@ -867,7 +867,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         try
         {
             CollectionAndDataObjectListAndSearchAO listAO = irodsAccessObjectFactory
-                .getCollectionAndDataObjectListAndSearchAO(acct);
+                .getCollectionAndDataObjectListAndSearchAO(rootAccount);
             ObjStat objStat = listAO.retrieveObjectStatForPath(irodsAbsPath);
             log.debug("vfs::statPath - objStat = {}", objStat);
 
