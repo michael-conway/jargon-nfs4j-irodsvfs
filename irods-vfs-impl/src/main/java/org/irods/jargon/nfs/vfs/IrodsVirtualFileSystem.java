@@ -862,7 +862,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         String irodsAbsPath = path.normalize().toString();
         log.debug("vfs::statPath - absolute path =  {}", irodsAbsPath);
         IRODSAccount acct = resolveIrodsAccount();
-        log.debug("vfs::statPath - IRODSAccount: "+acct);
+        log.debug("vfs::statPath - IRODSAccount: "+acct+"  Proxy Name: "+ acct.getProxyName());
 
         try
         {
