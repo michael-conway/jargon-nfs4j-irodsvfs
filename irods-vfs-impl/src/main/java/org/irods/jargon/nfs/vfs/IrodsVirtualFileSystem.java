@@ -705,7 +705,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
 
             log.debug("parent path: {}", irodsParentPath);
 
-            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount())
+            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(rootAccount)
                 .instanceIRODSFile(irodsParentPath, path);
 
             pathFile.delete();
@@ -878,7 +878,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             stat.setMTime(objStat.getModifiedAt().getTime());
             
 
-            UserAO userAO = irodsAccessObjectFactory.getUserAO(rootAccount);
+            UserAO userAO = irodsAccessObjectFactory.getUserAO(acct);
             StringBuilder sb = new StringBuilder();
             sb.append(objStat.getOwnerName());
             sb.append("#");
