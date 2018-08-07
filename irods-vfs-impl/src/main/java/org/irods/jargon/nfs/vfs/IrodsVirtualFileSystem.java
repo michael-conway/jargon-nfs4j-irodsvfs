@@ -957,6 +957,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         int userID = 0;
         userID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
         
+        log.debug("[ResolveIrodsAccount] UserID: " + userID);
+        
         if(userID == 0){
             return rootAccount;
         }
