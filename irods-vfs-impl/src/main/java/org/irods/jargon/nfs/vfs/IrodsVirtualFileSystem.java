@@ -878,7 +878,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             stat.setMTime(objStat.getModifiedAt().getTime());
             
 
-            UserAO userAO = irodsAccessObjectFactory.getUserAO(acct);
+            UserAO userAO = irodsAccessObjectFactory.getUserAO(rootAccount);
             StringBuilder sb = new StringBuilder();
             sb.append(objStat.getOwnerName());
             sb.append("#");
