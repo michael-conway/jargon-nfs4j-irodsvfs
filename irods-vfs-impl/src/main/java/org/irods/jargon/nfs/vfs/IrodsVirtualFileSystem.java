@@ -83,7 +83,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
     private final NonBlockingHashMapLong<Path> inodeToPath = new NonBlockingHashMapLong<>();
     private final NonBlockingHashMap<Path, Long> pathToInode = new NonBlockingHashMap<>();
     private final AtomicLong fileId = new AtomicLong(1); // numbering starts at 1
-    private final NfsIdMapping _idMapper;
+    private final IrodsIdMap _idMapper;
 
     /**
      * Default constructor
@@ -203,7 +203,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         int returnMode = 0;
         try
         {
-            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount())
+            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount(resolveCurrentUser()))
                 .instanceIRODSFile(path.toString());
 
             if (PermissionBitmaskUtils.isUserExecuteSet(mode))
@@ -331,7 +331,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         try
         {
             IRODSFileFactory irodsFileFactory = irodsAccessObjectFactory
-                    .getIRODSFileFactory(resolveIrodsAccount());
+                    .getIRODSFileFactory(resolveIrodsAccount(resolveCurrentUser()));
             IRODSFile newFile = irodsFileFactory.instanceIRODSFile(newPath.toString());
             log.debug("creating new file at: {}", newFile);
             newFile.createNewFile();
@@ -481,7 +481,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         try
         {
             CollectionAndDataObjectListAndSearchAO listAO = irodsAccessObjectFactory
-                .getCollectionAndDataObjectListAndSearchAO(resolveIrodsAccount());
+                .getCollectionAndDataObjectListAndSearchAO(resolveIrodsAccount(resolveCurrentUser()));
 
             // get collection listing from root node
             Path parentPath = resolveInode(getInodeNumber(_inode));
@@ -553,12 +553,15 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
     public Inode mkdir(Inode _inode, String _path, Subject _subject, int _mode) throws IOException
     {
         log.debug("vfs::mkdir");
+        
+        //get IrodsUserID
+        int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
 
         try
         {
             Path parentPath = resolveInode(getInodeNumber(_inode));
 
-            IRODSFileFactory fileFactory = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount());
+            IRODSFileFactory fileFactory = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount(irodsUserID));
             IRODSFile irodsFile = fileFactory.instanceIRODSFile(parentPath.toString(), _path);
 
             log.debug("vfs::mkdir - inode map (before creating new directory) = {}", mapper.writeValueAsString(inodeToPath));
@@ -589,6 +592,9 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         log.debug("vfs::move");
         log.debug("vfs::move:: OldName: "+ oldName + "node: " + inode.toString());
         log.debug("vfs::move:: newName: "+ newName + "node: " + dest.toString());
+        
+        //get IrodsUserID
+        int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
 
         try
         {
@@ -601,7 +607,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             // create IRODSFile for file to move
             String irodsParentPath = parentPath.toString()+"/"+oldName;
             log.debug("parent path:{}", irodsParentPath);
-            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount())
+            IRODSFile pathFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount(resolveCurrentUser()))
                 .instanceIRODSFile(irodsParentPath);
 
             // create empty destination file object
@@ -615,11 +621,11 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             
             log.debug("vfs::move:: Destination Path: "+ destPathString);
             // create irods destination file object
-            IRODSFile destFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount())
+            IRODSFile destFile = irodsAccessObjectFactory.getIRODSFileFactory(resolveIrodsAccount(resolveCurrentUser()))
                     .instanceIRODSFile(destPathString);
 
             // get file system controls
-            IRODSFileSystemAO fileSystemAO = irodsAccessObjectFactory.getIRODSFileSystemAO(rootAccount);
+            IRODSFileSystemAO fileSystemAO = irodsAccessObjectFactory.getIRODSFileSystemAO(_idMapper.resolveIRODSUserAccount(resolveCurrentUser()));
             
             log.debug("vfs::move:: is file? "+ pathFile.isFile());
 
@@ -870,6 +876,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             stat.setATime(objStat.getModifiedAt().getTime());
             stat.setCTime(objStat.getCreatedAt().getTime());
             stat.setMTime(objStat.getModifiedAt().getTime());
+            
 
             UserAO userAO = irodsAccessObjectFactory.getUserAO(resolveIrodsAccount());
             StringBuilder sb = new StringBuilder();
@@ -878,13 +885,13 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             sb.append(objStat.getOwnerZone());
             User user = userAO.findByName(sb.toString());
 
-            
-            int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
+            //Set User stats
+            //int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
             //log.debug("Subject: " + AccessController.getContext().getDomainCombiner().getClass().getName());
             //log.debug("Subject UserID: " + subject.getPrincipals().iterator().next().getName());
-
-            stat.setUid(irodsUserID);
-            stat.setGid(irodsUserID); // iRODS does not have a gid
+            int userId = Integer.getInteger(user.getId());
+            stat.setUid(userId);
+            stat.setGid(userId); // iRODS does not have a gid
             log.debug("vfs::statPath - user id = {}", user.getId());
 
             // TODO right now don't have soft link or mode support
@@ -949,6 +956,21 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
     private IRODSAccount resolveIrodsAccount()
     {
         return rootAccount;
+    }
+    /**
+     * Return User Account based on UserID
+    */
+    private IRODSAccount resolveIrodsAccount(int userID)
+    {
+        
+        return _idMapper.resolveIRODSUserAccount(userID);
+    }
+    
+    /**
+     * Get Current User ID 
+     */
+    private int resolveCurrentUser(){
+        return Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
     }
     
     /**Mapping**/
