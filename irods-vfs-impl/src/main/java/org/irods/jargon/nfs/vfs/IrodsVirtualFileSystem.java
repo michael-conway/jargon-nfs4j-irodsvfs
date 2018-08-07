@@ -883,7 +883,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             sb.append(objStat.getOwnerName());
             sb.append("#");
             sb.append(objStat.getOwnerZone());
-            User user = userAO.findByName(sb.toString());
+            User user = userAO.findByName(objStat.getOwnerName());
+            log.debug("user: " + user);
 
             //Set User stats
             //int irodsUserID = Integer.parseInt(Subject.getSubject(AccessController.getContext()).getPrincipals().iterator().next().getName());
