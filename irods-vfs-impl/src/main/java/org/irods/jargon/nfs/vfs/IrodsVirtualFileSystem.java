@@ -128,7 +128,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         Log.info("Get Root name: "+ root.getName());
         
         
-        //establishRoot();
+        establishRoot();
     }
 
     private void establishRoot() throws DataNotFoundException, JargonException
