@@ -118,14 +118,17 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         }
         
         
-        _idMapper = idMapper;
+        
         irodsAccessObjectFactory = _irodsAccessObjectFactory;
         rootAccount = _rootAccount;
         root = _root;
+        _idMapper = idMapper;
         
         Log.info("IdMapping: " + _idMapper.toString());
+        Log.info("Get Root name: "+ root.getName());
         
-        establishRoot();
+        
+        //establishRoot();
     }
 
     private void establishRoot() throws DataNotFoundException, JargonException
@@ -337,7 +340,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             newFile.createNewFile();
             long newInodeNumber = fileId.getAndIncrement();
             map(newInodeNumber, newPath);
-//            setOwnershipAndMode(newPath, subject, mode);
+            setOwnershipAndMode(newPath, subject, mode);
             return toFh(newInodeNumber);
 
         }
@@ -355,10 +358,10 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         return null;
     }
 
-//    private void setOwnershipAndMode(Path newPath, Subject subject, int mode)
-//    {
-//        log.debug("setOwnershipAndMode()"); // TODO: right now a noop
-//    }
+    private void setOwnershipAndMode(Path newPath, Subject subject, int mode)
+    {
+        log.debug("[setOwnershipAndMode]Subject: " + subject.toString()); // TODO: right now a noop
+    }
 
     @Override
     public nfsace4[] getAcl(Inode inode) throws IOException
