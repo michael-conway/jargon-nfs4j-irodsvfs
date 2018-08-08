@@ -25,7 +25,7 @@ import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.io.IRODSFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.irods.jargon.nfs.vfs.IrodsIdMap;
+
 
 public class NfsMain {
 	
@@ -51,9 +51,6 @@ public class NfsMain {
 	IRODSAccessObjectFactory factory = IRODSAccessObjectFactoryImpl.instance(fs.getIrodsSession());
 	IRODSFile rootFile = factory.getIRODSFileFactory(acct).instanceIRODSFile("/tempZone/home/rods");
         
-        
-        //send data to irodsIdMap
-        IrodsIdMap _idMapper = new IrodsIdMap(factory, acct, irodsAdmin);
 		OncRpcSvc nfsSvc = new OncRpcSvcBuilder()
 			.withPort(2049)
 			.withTCP()
@@ -66,7 +63,7 @@ public class NfsMain {
 		ExportFile exportFile = new ExportFile(new File(PREFIX + "config/exports"));
 		
 		
-		VirtualFileSystem vfs = new IrodsVirtualFileSystem(factory, acct, rootFile, _idMapper);
+		VirtualFileSystem vfs = new IrodsVirtualFileSystem(factory, acct, rootFile);
 			
 		NFSServerV41 nfs4 = new NFSServerV41.Builder()
 		    .withExportFile(exportFile)

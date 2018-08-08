@@ -98,7 +98,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
      */
     public IrodsVirtualFileSystem(IRODSAccessObjectFactory _irodsAccessObjectFactory,
                                   IRODSAccount _rootAccount,
-                                  IRODSFile _root, IrodsIdMap idMapper) throws DataNotFoundException, JargonException
+                                  IRODSFile _root) throws DataNotFoundException, JargonException
     {
         super(); // This is probably not needed.
 
@@ -118,14 +118,17 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         }
         
         
-        _idMapper = idMapper;
+        
         irodsAccessObjectFactory = _irodsAccessObjectFactory;
         rootAccount = _rootAccount;
         root = _root;
         
-        Log.info("IdMapping: " + _idMapper.toString());
+        _idMapper =  new IrodsIdMap(irodsAccessObjectFactory, rootAccount, root.getName());
         
-        establishRoot();
+        Log.info("IdMapping: " + _idMapper.toString());
+        Log.info("Root Name: " + root.getName());
+        
+        //establishRoot();
     }
 
     private void establishRoot() throws DataNotFoundException, JargonException
