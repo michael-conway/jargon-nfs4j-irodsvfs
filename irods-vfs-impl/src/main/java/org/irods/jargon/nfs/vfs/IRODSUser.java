@@ -45,6 +45,7 @@ public class IRODSUser {
         String userzone = "tempZone";
         
         String zonePath = "/"+userzone+"/home/"+username;
+        log.debug("[IRODSUser] Creating User");
         try {
             //Create Irods Account instance for user and bind to associated globals
             this.rootAccount = IRODSAccount.instanceWithProxy("localhost", 1247, username, adminPw, zonePath, userzone, "demoResc", adminAcct, userzone);
@@ -110,7 +111,7 @@ public class IRODSUser {
      */
     private void establishRoot()
     {
-        log.debug("establish root at: {}", this.root);
+        log.debug("[IRODSUser] establish root at: {}", this.root);
 
         try
         {
