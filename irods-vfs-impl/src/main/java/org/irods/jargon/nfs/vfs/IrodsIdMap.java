@@ -101,7 +101,8 @@ public class IrodsIdMap implements NfsIdMapping, RpcLoginService{
                     //if it is service
                     if(principal.substring(0,4).equals("nfs/")){
                         //userID = _irods.getUserAO(_irodsAcct).findByName(_irodsAdmin).getId();
-                        //do nothing
+                        //TODO: Save as admin
+                        return Subjects.of(DEFAULT_UID, DEFAULT_GID);
                     }
                     else{
                         //parse principal
