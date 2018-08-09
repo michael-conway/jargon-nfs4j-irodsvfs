@@ -107,18 +107,20 @@ public class IrodsIdMap implements NfsIdMapping, RpcLoginService{
                         //parse principal
                         String[] parts = principal.split("@");
                         userName = parts[0];
+                        
+                        //create User Object
+                        IRODSUser user = new IRODSUser(userName);
+
+                        //Save <Principle, Uid>
+                        _principleUidMap.put(principal, user.getUserID());
+                        log.debug("principleUidMap Principal: " +principal +"    ID: "+ _principleUidMap.get(principal));
+
+                        //save user Object to user ID
+                        _irodsPrincipleMap.put(user.getUserID(), user);
+                        log.debug("irodsPrincipleMap ID: " +user.getUserID() +"    User: "+ _principleUidMap.get(user.getUserID()));
                     }
                     
-                    //create User Object
-                    IRODSUser user = new IRODSUser(userName);
                     
-                    //Save <Principle, Uid>
-                    _principleUidMap.put(principal, user.getUserID());
-                    log.debug("principleUidMap Principal: " +principal +"    ID: "+ _principleUidMap.get(principal));
-                    
-                    //save user Object to user ID
-                    _irodsPrincipleMap.put(user.getUserID(), user);
-                    log.debug("irodsPrincipleMap ID: " +user.getUserID() +"    User: "+ _principleUidMap.get(user.getUserID()));
                     
                     //createIrodsAccountInstance(new Integer(userName));
                     
