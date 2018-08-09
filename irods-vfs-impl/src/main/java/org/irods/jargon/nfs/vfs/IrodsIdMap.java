@@ -102,14 +102,17 @@ public class IrodsIdMap implements NfsIdMapping, RpcLoginService{
                     if(principal.substring(0,4).equals("nfs/")){
                         //userID = _irods.getUserAO(_irodsAcct).findByName(_irodsAdmin).getId();
                         //TODO: Save as admin
-                        return Subjects.of(DEFAULT_UID, DEFAULT_GID);
+                        userName="rods";
                     }
                     else{
                         //parse principal
                         String[] parts = principal.split("@");
                         userName = parts[0];
                         
-                        //create User Object
+                       
+                    }
+                    
+                     //create User Object
                         IRODSUser user = new IRODSUser(userName);
 
                         //Save <Principle, Uid>
@@ -119,7 +122,6 @@ public class IrodsIdMap implements NfsIdMapping, RpcLoginService{
                         //save user Object to user ID
                         _irodsPrincipleMap.put(user.getUserID(), user);
                         log.debug("irodsPrincipleMap ID: " +user.getUserID() +"    User: "+ _principleUidMap.get(user.getUserID()));
-                    }
                     
                     
                     
