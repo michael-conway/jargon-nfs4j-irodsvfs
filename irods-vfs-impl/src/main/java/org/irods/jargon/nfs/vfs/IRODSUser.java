@@ -44,7 +44,7 @@ public class IRODSUser {
         String adminPw = "rods";
         String userzone = "tempZone";
         
-        String zonePath = userzone+"/home/"+username;
+        String zonePath = "/"+userzone+"/home/"+username;
         try {
             //Create Irods Account instance for user and bind to associated globals
             this.rootAccount = IRODSAccount.instanceWithProxy("localhost", 1247, username, adminPw, zonePath, userzone, "demoResc", adminAcct, userzone);
@@ -128,7 +128,7 @@ public class IRODSUser {
             }
 
             log.debug("mapping root...");
-            map(this.fileId.getAndIncrement(), this.root.getAbsolutePath()); // so root is always inode #1
+            this.map(this.fileId.getAndIncrement(), this.root.getAbsolutePath()); // so root is always inode #1
         }
         finally
         {
