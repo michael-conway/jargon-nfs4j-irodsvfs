@@ -350,6 +350,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
     {
         IRODSUser user = resolveIRODSUser(getUserID());
         log.debug("vfs::getFsStat");
+        //TODO: Add tickmark for distributed systems. Should be using RCObj stat/. Update: Checkmark added
         FileStore store = Files.getFileStore(Paths.get(user.getAbsolutePath()));
         long total = store.getTotalSpace();
         long free = store.getUsableSpace();
@@ -394,6 +395,7 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         return statPath(path, inodeNumber);
     }
 
+    //used for memory mapping?
     @Override
     public boolean hasIOLayout(Inode inode) throws IOException
     {
@@ -461,13 +463,16 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             log.debug("vfs::list - list contents of [{}] ...", parentPath);
 
             String irodsAbsPath = parentPath.normalize().toString();
-
+            
+            //TODO: look into Caching constructed objects per user
             List<CollectionAndDataObjectListingEntry> entries = listAO
                 .listDataObjectsAndCollectionsUnderPath(irodsAbsPath);
 
             for (final CollectionAndDataObjectListingEntry dataObj : entries)
             {
                 Path filePath = parentPath.resolve(dataObj.getPathOrName());
+                
+                //TODO: Pull out to well named constant
                 long inodeNumber = -1;
                 
                 log.debug("vfs::list - entry = {}", filePath);
@@ -630,7 +635,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
         Path path = resolveInode(getInodeNumber(_inode));
         return toFh(resolvePath(path.getParent()));
     }
-
+    
+    //TODO: Distributed Systems. 
     @Override
     public int read(Inode inode, byte[] data, long offset, int count) throws IOException
     {
@@ -643,7 +649,8 @@ public class IrodsVirtualFileSystem implements VirtualFileSystem
             return channel.read(destBuffer, offset);
         }
     }
-
+    
+    //gives all system metadata for symbolic links
     @Override
     public String readlink(Inode inode) throws IOException
     {
